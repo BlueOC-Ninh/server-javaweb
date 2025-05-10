@@ -1,12 +1,12 @@
 package com.group15.javaweb.entity;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Min;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
@@ -14,23 +14,26 @@ import java.time.LocalDateTime;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class User {
-    public enum ROLE { USER, ADMIN };
-
+public class Product {
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private String id;
 
     @Column(nullable = false)
-    private String username;
+    private String name;
 
-    @Column(nullable = false, unique = true)
-    private String email;
+    private String avatarUrl;
+
+    @Column(nullable = false, precision = 10, scale = 2)
+    private BigDecimal price;
 
     @Column(nullable = false)
-    private String password;
+    private int quantity;
 
-    private String phone;
+    @Column(nullable = false)
+    private int soldCount;
+
+    private String desc;
 
     @Column(name = "created_at", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     private LocalDateTime createdAt;
@@ -38,12 +41,24 @@ public class User {
     @Column(name = "updated_at", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     private LocalDateTime updatedAt;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private ROLE role = ROLE.USER;
+    @ManyToOne
+    @JoinColumn(name = "category_id", nullable = false)
+    private Category category;
+
+    @Lob
+    private String receivingProcess;
+
+    @Lob
+    private String warrantyPolicy;
+
+    @Lob
+    private String frequentlyAskedQuestions;
+
+    @Column(precision = 10, scale = 2)
+    private BigDecimal discount;
 
     @Column(nullable = false)
-    private boolean isActive = true;
+    private int daysValid;
 
     @PrePersist
     public void prePersist() {

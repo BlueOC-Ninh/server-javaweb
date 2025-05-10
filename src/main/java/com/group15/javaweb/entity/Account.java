@@ -1,7 +1,6 @@
 package com.group15.javaweb.entity;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Min;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,15 +13,11 @@ import java.time.LocalDateTime;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class User {
-    public enum ROLE { USER, ADMIN };
+public class Account {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private String id;
-
-    @Column(nullable = false)
-    private String username;
 
     @Column(nullable = false, unique = true)
     private String email;
@@ -30,7 +25,8 @@ public class User {
     @Column(nullable = false)
     private String password;
 
-    private String phone;
+    @Column(nullable = false)
+    private int daysValid;
 
     @Column(name = "created_at", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     private LocalDateTime createdAt;
@@ -38,12 +34,12 @@ public class User {
     @Column(name = "updated_at", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     private LocalDateTime updatedAt;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private ROLE role = ROLE.USER;
-
     @Column(nullable = false)
     private boolean isActive = true;
+
+    @ManyToOne
+    @JoinColumn(name = "category_id", nullable = false)
+    private Category category;
 
     @PrePersist
     public void prePersist() {
