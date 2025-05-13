@@ -8,6 +8,8 @@ import com.group15.javaweb.exception.ApiException;
 import com.group15.javaweb.mapper.UserMapper;
 import com.group15.javaweb.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -21,14 +23,16 @@ public class UserService {
     @Autowired
     private UserMapper userMapper;
 
-    public User createUser(UserCreationRequest request){
-        User user = userMapper.toUser(request);
-
-        if(userRepository.existsByEmail(request.getEmail()))
-            throw  new  ApiException(400, "Email đã tồn tại");
-
-        return  userRepository.save(user);
-    }
+//    public User createUser(UserCreationRequest request){
+//
+//        User user = userMapper.toUser(request);
+//        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
+//        user.setPassword(passwordEncoder.encode(request.getPassword()));
+//        if(userRepository.existsByEmail(request.getEmail()))
+//            throw  new  ApiException(400, "Email đã tồn tại");
+//
+//        return  userRepository.save(user);
+//    }
 
     public List<User> getAllUsers(){
         return userRepository.findAll();

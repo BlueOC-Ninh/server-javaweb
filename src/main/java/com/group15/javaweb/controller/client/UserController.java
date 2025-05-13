@@ -16,12 +16,12 @@ import java.util.List;
 @RequestMapping("/users")
 public class UserController {
   @Autowired
-    private UserService userService;
+  private UserService userService;
 
-    @PostMapping
-    ApiResponse<User> createUser(@Valid @RequestBody UserCreationRequest request) {
-        return ApiResponse.createdSuccess("Thêm mới người dùng thành công", userService.createUser(request));
-    }
+//    @PostMapping
+//    ApiResponse<User> createUser(@Valid @RequestBody UserCreationRequest request) {
+//        return ApiResponse.createdSuccess("Thêm mới người dùng thành công", userService.createUser(request));
+//    }
 
     @GetMapping
      ApiResponse<List<User>> getAllUsers(){
