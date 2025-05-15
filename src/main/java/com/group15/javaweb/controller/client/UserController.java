@@ -8,6 +8,7 @@ import com.group15.javaweb.entity.User;
 import com.group15.javaweb.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,11 +19,8 @@ public class UserController {
   @Autowired
   private UserService userService;
 
-//    @PostMapping
-//    ApiResponse<User> createUser(@Valid @RequestBody UserCreationRequest request) {
-//        return ApiResponse.createdSuccess("Thêm mới người dùng thành công", userService.createUser(request));
-//    }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping
      ApiResponse<List<User>> getAllUsers(){
         return ApiResponse.success("Lấy thông tin danh sách người dùng thành công",userService.getAllUsers());

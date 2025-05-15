@@ -21,7 +21,7 @@ public class AuthController {
      private AuthService authService;
 
     @PostMapping("/login")
-    ApiResponse<LoginResponse> login (@Valid @RequestBody  LoginRequest request){
+    ApiResponse<LoginResponse> login (@Valid @RequestBody  LoginRequest request) throws Exception {
         return ApiResponse.success("Đăng nhập thành công", authService.login(request));
     }
 

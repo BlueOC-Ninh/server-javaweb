@@ -1,6 +1,5 @@
 package com.group15.javaweb.dto;
 
-import com.group15.javaweb.entity.User.ROLE;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
@@ -38,7 +37,7 @@ public class UserCreationRequest {
     )
     private String phone;
 
-    private ROLE role = ROLE.USER;
+    private Role role = Role.USER;
 
     private boolean isActive = true;
 }

@@ -1,21 +1,19 @@
 package com.group15.javaweb.entity;
 
+import com.group15.javaweb.dto.Role;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
+@Builder
 @Entity
 @Setter
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
 public class User {
-    public enum ROLE { USER, ADMIN };
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -40,7 +38,7 @@ public class User {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private ROLE role = ROLE.USER;
+    private Role role = Role.USER;
 
     @Column(nullable = false)
     private boolean isActive = true;

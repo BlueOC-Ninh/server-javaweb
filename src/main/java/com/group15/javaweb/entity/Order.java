@@ -22,8 +22,8 @@ public class Order {
     }
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private String id;
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "user_id", nullable = false)
