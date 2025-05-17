@@ -1,5 +1,6 @@
-package com.group15.javaweb.dto;
+package com.group15.javaweb.dto.request;
 
+import com.group15.javaweb.dto.Role;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;

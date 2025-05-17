@@ -1,11 +1,11 @@
-package com.group15.javaweb.controller.client;
+package com.group15.javaweb.controller;
 
 
 import com.group15.javaweb.dto.request.LoginRequest;
 import com.group15.javaweb.dto.request.RegisterRequest;
 import com.group15.javaweb.dto.response.ApiResponse;
 import com.group15.javaweb.dto.response.LoginResponse;
-import com.group15.javaweb.dto.response.client.user.UserResponse;
+import com.group15.javaweb.dto.response.UserResponse;
 import com.group15.javaweb.service.AuthService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;

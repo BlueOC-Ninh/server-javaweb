@@ -1,4 +1,4 @@
-package com.group15.javaweb.dto.response.client.user;
+package com.group15.javaweb.dto.response;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

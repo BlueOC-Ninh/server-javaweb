@@ -14,7 +14,7 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(ex.getMessage() ,HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    @ExceptionHandler(value = RuntimeException.class)
+    @ExceptionHandler(value = ApiException.class)
     ResponseEntity<ApiResponse> handleRuntimeException(ApiException ex){
         ApiResponse res = new ApiResponse();
         res.setCode(ex.getCode());

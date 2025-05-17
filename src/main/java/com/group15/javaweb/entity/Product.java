@@ -33,6 +33,9 @@ public class Product {
     @Column(nullable = false)
     private int soldCount;
 
+    @Column(nullable = false)
+    private boolean deleted;
+
     private String description;
 
     @Column(name = "created_at", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")

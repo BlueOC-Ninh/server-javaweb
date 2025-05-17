@@ -3,6 +3,7 @@ package com.group15.javaweb.config;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -19,10 +20,8 @@ import javax.crypto.spec.SecretKeySpec;
 import java.util.Collections;
 
 @Configuration
-@EnableMethodSecurity // Cho phép dùng @PreAuthorize
+@EnableMethodSecurity
 public class SecurityConfig {
-
-    private final String[] PUBLIC_ENDPOINTS = {"/auth/login", "/auth/register", "/users"};
 
     @Value("${jwt.privateKey}")
     private String jwtSecret;
@@ -32,8 +31,13 @@ public class SecurityConfig {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(PUBLIC_ENDPOINTS).permitAll()
-                        .requestMatchers("/admin/**").hasRole("ADMIN") // Ví dụ phân quyền
+                        .requestMatchers("/auth/login", "/auth/register", "/users").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/categories/**", "/api/products/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/categories/**", "/api/products/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/categories/**", "/api/products/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/categories/**", "/api/products/**").hasRole("ADMIN")
+
+                        // Other endpoints require authentication
                         .anyRequest().authenticated()
                 )
                 .formLogin(AbstractHttpConfigurer::disable)
@@ -44,6 +48,7 @@ public class SecurityConfig {
 
         return http.build();
     }
+
 
     @Bean
     public JwtDecoder jwtDecoder() {

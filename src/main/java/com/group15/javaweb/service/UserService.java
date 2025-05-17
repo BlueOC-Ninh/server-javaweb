@@ -1,15 +1,13 @@
 package com.group15.javaweb.service;
 
-import com.group15.javaweb.dto.UpdateMeRequest;
-import com.group15.javaweb.dto.UserCreationRequest;
-import com.group15.javaweb.dto.response.client.user.UserResponse;
+import com.group15.javaweb.dto.request.UpdateMeRequest;
+import com.group15.javaweb.dto.response.UserResponse;
+import com.group15.javaweb.entity.Product;
 import com.group15.javaweb.entity.User;
 import com.group15.javaweb.exception.ApiException;
 import com.group15.javaweb.mapper.UserMapper;
 import com.group15.javaweb.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -23,16 +21,21 @@ public class UserService {
     @Autowired
     private UserMapper userMapper;
 
-//    public User createUser(UserCreationRequest request){
-//
-//        User user = userMapper.toUser(request);
-//        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
-//        user.setPassword(passwordEncoder.encode(request.getPassword()));
-//        if(userRepository.existsByEmail(request.getEmail()))
-//            throw  new  ApiException(400, "Email đã tồn tại");
-//
-//        return  userRepository.save(user);
-//    }
+    public void deleteUser(String id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new ApiException(404, "Tài khoản không tồn tại"));
+
+        user.setActive(false);
+        userRepository.save(user);
+    }
+
+    public void restoreUser(String id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new ApiException(404, "Tài khoản không tồn tại"));
+
+        user.setActive(true);
+        userRepository.save(user);
+    }
 
 
     public List<User> getAllUsers(){

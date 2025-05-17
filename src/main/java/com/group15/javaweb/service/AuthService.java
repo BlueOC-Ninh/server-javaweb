@@ -5,7 +5,7 @@ import com.group15.javaweb.dto.Role;
 import com.group15.javaweb.dto.request.LoginRequest;
 import com.group15.javaweb.dto.request.RegisterRequest;
 import com.group15.javaweb.dto.response.LoginResponse;
-import com.group15.javaweb.dto.response.client.user.UserResponse;
+import com.group15.javaweb.dto.response.UserResponse;
 import com.group15.javaweb.entity.User;
 import com.group15.javaweb.exception.ApiException;
 import com.group15.javaweb.mapper.UserMapper;
@@ -16,7 +16,6 @@ import com.nimbusds.jose.JWSSigner;
 import com.nimbusds.jose.crypto.MACSigner;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
-import lombok.experimental.NonFinal;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -45,7 +44,7 @@ public class AuthService {
        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
        String token = createJWT(user.getId(), user.getRole());
        if (passwordEncoder.matches(request.getPassword(), user.getPassword())) {
-           return new LoginResponse(token);
+           return new LoginResponse(user.getEmail(), user.getRole(), token);
        } else {
            throw new ApiException(400, "Tài khoản hoặc mật khẩu không chính xác");
        }
@@ -55,6 +54,7 @@ public class AuthService {
        User user = userMapper.toUser(request);
        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
        user.setPassword(passwordEncoder.encode(request.getPassword()));
+       user.setRole(Role.USER);
        if(userRepository.existsByEmail(request.getEmail()))
            throw  new  ApiException(400, "Email đã tồn tại");
        return userMapper.toUserResponse(userRepository.save(user));
