@@ -44,7 +44,7 @@ public class AuthService {
        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
        String token = createJWT(user.getId(), user.getRole());
        if (passwordEncoder.matches(request.getPassword(), user.getPassword())) {
-           return new LoginResponse(user.getEmail(), user.getRole(), token);
+           return new LoginResponse(user.getEmail(), user.getRole(), token, user.getId());
        } else {
            throw new ApiException(400, "Tài khoản hoặc mật khẩu không chính xác");
        }
