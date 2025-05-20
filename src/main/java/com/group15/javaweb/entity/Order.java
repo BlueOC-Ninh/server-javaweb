@@ -5,6 +5,7 @@ import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "orders")
@@ -13,13 +14,6 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Order {
-
-    public enum PaymentMethod {
-        ZALO_PAY,
-        BANK_TRANSFER,
-        CASH_ON_DELIVERY,
-        E_WALLET
-    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -41,13 +35,8 @@ public class Order {
     @Column(name = "final_amount", nullable = false, precision = 10, scale = 2)
     private BigDecimal finalAmount;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "payment_method")
-    private PaymentMethod paymentMethod;
-
-    @ManyToOne
-    @JoinColumn(name = "discount_code_id")
-    private DiscountCode discountCode;
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
+    private List<OrderItem> orderItems;
 
     @PrePersist
     public void prePersist() {

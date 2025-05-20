@@ -25,9 +25,7 @@ public class OrderItem {
     @JoinColumn(name = "product_id", nullable = false)
     private Product product;
 
-    @Column(nullable = false)
-    private int quantity;
 
     @Column(name = "total_price", nullable = false, precision = 10, scale = 2)
-    private BigDecimal totalPrice;
+    private BigDecimal totalPrice; // price sau khi da giam
 }
