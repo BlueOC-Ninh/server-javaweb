@@ -14,7 +14,6 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class CartService {
@@ -40,10 +39,9 @@ public class CartService {
             Product product = item.getProduct();
             BigDecimal price = product.getPrice();
             BigDecimal discount = product.getDiscount() != null ? product.getDiscount() : BigDecimal.ZERO;
-            BigDecimal discounted = price.subtract(discount);
 
             totalOriginal = totalOriginal.add(price);
-            totalDiscounted = totalDiscounted.add(discounted);
+            totalDiscounted = totalDiscounted.add(price.multiply(discount).divide(BigDecimal.valueOf(100)));
 
             CartItemResponse response = new CartItemResponse();
             response.setId(item.getId());

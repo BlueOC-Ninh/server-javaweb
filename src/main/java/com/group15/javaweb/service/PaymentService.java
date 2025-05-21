@@ -6,10 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import vn.payos.PayOS;
 import vn.payos.type.CheckoutResponseData;
-import vn.payos.type.ItemData;
 import vn.payos.type.PaymentData;
-
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor

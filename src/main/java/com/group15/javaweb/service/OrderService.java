@@ -1,6 +1,7 @@
 package com.group15.javaweb.service;
 
 import com.group15.javaweb.entity.*;
+import com.group15.javaweb.exception.ApiException;
 import com.group15.javaweb.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -14,61 +15,63 @@ public class OrderService {
 
     private final OrderRepository orderRepository;
     private final UserRepository userRepository;
-    private final ProductRepository productRepository;
     private final CartRepository cartRepository;
     private final CartItemRepository cartItemRepository;
     private final OrderItemRepository orderItemRepository;
 
     public void createOrderFromPayment(String userId, BigDecimal finalAmount) {
-        // Lấy user theo userId
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ApiException(404, "Không tìm thấy người dùng"));
 
-        // Lấy giỏ hàng và các item trong giỏ
         Cart cart = cartRepository.findByUserId(userId)
-                .orElseThrow(() -> new RuntimeException("Cart not found"));
+                .orElseThrow(() -> new ApiException(404, "Không tìm thấy giỏ hàng"));
 
         List<CartItem> cartItems = cartItemRepository.findByCartId(cart.getId());
 
-        if (cartItems.isEmpty()) {
-            throw new RuntimeException("Cart is empty");
+        if ( cartItems.isEmpty()) {
+            throw new ApiException(404, "Giỏ hàng hiện đang trống");
         }
 
-        // Tính tổng tiền chưa giảm
-        BigDecimal totalAmount = BigDecimal.ZERO;
-        BigDecimal discountAmount = BigDecimal.ZERO;
+        // Tính tổng tiền và giảm giá
+        BigDecimal totalAmount = BigDecimal.ZERO; // Tong tien phai tra truoc giam gia
+        BigDecimal discountAmount = BigDecimal.ZERO; // Tong tien giam gia
 
         for (CartItem item : cartItems) {
             BigDecimal price = item.getProduct().getPrice();
             BigDecimal discount = item.getProduct().getDiscount();
-            BigDecimal priceAfterDiscount = price.subtract(price.multiply(discount).divide(BigDecimal.valueOf(100)));
-            totalAmount = totalAmount.add(priceAfterDiscount);
-            discountAmount = discountAmount.add(discount);
+            if (discount == null) discount = BigDecimal.ZERO;
+//
+//            BigDecimal priceAfterDiscount = price.subtract(price.multiply(discount).divide(BigDecimal.valueOf(100)));
+            totalAmount = totalAmount.add(price);
+            discountAmount = discountAmount.add(price.multiply(discount).divide(BigDecimal.valueOf(100)));
         }
 
-        // Tạo đơn hàng với tổng tiền, tiền giảm và tiền cuối cùng
+        // Tạo đơn hàng
         Order order = new Order();
         order.setUser(user);
-        order.setTotalAmount(totalAmount); // tong tien truoc giam gia
-        order.setDiscountAmount(discountAmount); // tong tien duoc giam
-        order.setFinalAmount(finalAmount);  // Giá trị thanh toán thực tế từ PayOS
+        order.setTotalAmount(totalAmount);
+        order.setDiscountAmount(discountAmount);
+        order.setFinalAmount(finalAmount);
         orderRepository.save(order);
 
-        // Tạo các orderItem dựa trên cartItems
+        // Tạo các mục trong đơn hàng
         for (CartItem item : cartItems) {
             Product product = item.getProduct();
             BigDecimal price = product.getPrice();
             BigDecimal discount = product.getDiscount();
+            if (discount == null) discount = BigDecimal.ZERO;
+
             BigDecimal priceAfterDiscount = price.subtract(price.multiply(discount).divide(BigDecimal.valueOf(100)));
 
             OrderItem orderItem = new OrderItem();
             orderItem.setOrder(order);
             orderItem.setProduct(product);
-            orderItem.setTotalPrice(priceAfterDiscount);
+            orderItem.setTotalPrice(priceAfterDiscount); // gia sau khi giam
 
             orderItemRepository.save(orderItem);
         }
 
+        // Xóa toàn bộ giỏ hàng sau khi tạo đơn hàng
         cartItemRepository.deleteAll(cartItems);
     }
 }
