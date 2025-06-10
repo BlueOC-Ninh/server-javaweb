@@ -76,14 +76,21 @@
 
 package com.group15.javaweb.service;
 
+import com.group15.javaweb.dto.response.OrderItemResponse;
+import com.group15.javaweb.dto.response.OrderResponse;
 import com.group15.javaweb.entity.*;
 import com.group15.javaweb.exception.ApiException;
 import com.group15.javaweb.repository.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -95,6 +102,49 @@ public class OrderService {
     private final CartItemRepository cartItemRepository;
     private final OrderItemRepository orderItemRepository;
     private final ProductRepository productRepository;
+
+    public Page<OrderResponse> getOrders(LocalDateTime fromDate, LocalDateTime toDate, int page, int size) {
+        PageRequest pageable = PageRequest.of(page, size, Sort.by("orderDate").descending());
+
+        Page<Order> orders;
+
+        if (fromDate != null && toDate != null) {
+            orders = orderRepository.findAllByOrderDateBetween(fromDate, toDate, pageable);
+        } else if (fromDate != null) {
+            orders = orderRepository.findAllByOrderDateGreaterThanEqual(fromDate, pageable);
+        } else if (toDate != null) {
+            orders = orderRepository.findAllByOrderDateLessThanEqual(toDate, pageable);
+        } else {
+            orders = orderRepository.findAll(pageable);
+        }
+
+        return orders.map(this::convertToDto);
+    }
+
+    private OrderResponse convertToDto(Order order) {
+        OrderResponse dto = new OrderResponse();
+        dto.setId(order.getId());
+        dto.setOrderDate(order.getOrderDate());
+        dto.setTotalAmount(order.getTotalAmount());
+        dto.setDiscountAmount(order.getDiscountAmount());
+        dto.setFinalAmount(order.getFinalAmount());
+
+        List<OrderItemResponse> itemDtos = order.getOrderItems().stream().map(item -> {
+            Product product = item.getProduct();
+            OrderItemResponse itemDto = new OrderItemResponse();
+            itemDto.setProductId(product.getId());
+            itemDto.setProductName(product.getName());
+            itemDto.setProductImageUrl(product.getAvatarUrl());
+            itemDto.setPrice(product.getPrice());
+            itemDto.setDiscount(product.getDiscount());
+            itemDto.setTotalPrice(item.getTotalPrice());
+            return itemDto;
+        }).collect(Collectors.toList());
+
+        dto.setItems(itemDtos);
+        return dto;
+    }
+
 
     public void createOrderFromPayment(String userId, BigDecimal finalAmount) {
         User user = userRepository.findById(userId)
